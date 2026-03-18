@@ -85,16 +85,23 @@ php artisan migrate
 - When `show_in_resource` is enabled, the current resource page can also be pinned or unpinned from the page header.
 - Pinned items are shown in a dedicated group at the top of the sidebar.
 
-## Release Checklist
+## Screenshots
 
-Before publishing a release:
+### Pin navigation items from the sidebar
 
-1. Run `composer test`.
-2. Run `vendor\\bin\\pint --test`.
-3. Run `composer validate --strict`.
-4. Create a semver tag such as `v1.0.0`.
-5. Submit the public repository to Packagist.
-6. Enable the Packagist GitHub webhook so pushes and tags sync automatically.
+![Sidebar item available to pin](docs/images/none-pinned.png)
+
+### Dedicated pinned group
+
+![Pinned group with one item](docs/images/one-pinned.png)
+
+### Multiple pinned items
+
+![Pinned group with multiple items](docs/images/two-pinned.png)
+
+## Credits
+
+- [Salman Hijazi](https://www.linkedin.com/in/syedsalmanhijazi/)
 
 ## License
 
