@@ -1,16 +1,17 @@
 <?php
 
+use Devletes\FilamentPinnableNavigation\Support\Navigation\NavigationKeyResolver;
+use Devletes\FilamentPinnableNavigation\Tests\Fixtures\Filament\Pages\NavigationGroupedPage;
+use Devletes\FilamentPinnableNavigation\Tests\Support\CreatesNavigationTestTables;
+use Devletes\FilamentPinnableNavigation\Tests\Support\FilamentNavigationTestPanelFactory;
 use Filament\Facades\Filament;
 use Filament\Pages\Dashboard;
 use Illuminate\Support\Facades\Route;
-use SalmanHijazi\PinnableNavigation\Support\Navigation\NavigationKeyResolver;
-use SalmanHijazi\PinnableNavigation\Tests\Fixtures\Filament\Pages\NavigationGroupedPage;
-use SalmanHijazi\PinnableNavigation\Tests\Support\CreatesNavigationTestTables;
-use SalmanHijazi\PinnableNavigation\Tests\Support\FilamentNavigationTestPanelFactory;
 
 uses(CreatesNavigationTestTables::class);
 
 beforeEach(function (): void {
+    config()->set('pinnable-navigation.database_enabled', true);
     $this->setUpNavigationTables();
 });
 
@@ -18,7 +19,7 @@ it('generates page and resource keys', function (): void {
     $resolver = app(NavigationKeyResolver::class);
 
     expect($resolver->forPage(NavigationGroupedPage::class))
-        ->toBe('page:SalmanHijaziPinnableNavigationTestsFixturesFilamentPagesNavigationGroupedPage')
+        ->toBe('page:DevletesFilamentPinnableNavigationTestsFixturesFilamentPagesNavigationGroupedPage')
         ->and($resolver->forResource(Dashboard::class))
         ->toBe('resource:FilamentPagesDashboard');
 });
@@ -36,5 +37,5 @@ it('resolves the current page key from the active route', function (): void {
     app()->instance('originalRequest', $request);
 
     expect(app(NavigationKeyResolver::class)->resolveCurrentPageKey($panel))
-        ->toBe('page:SalmanHijaziPinnableNavigationTestsFixturesFilamentPagesNavigationGroupedPage');
+        ->toBe('page:DevletesFilamentPinnableNavigationTestsFixturesFilamentPagesNavigationGroupedPage');
 });

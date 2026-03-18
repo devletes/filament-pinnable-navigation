@@ -22,6 +22,11 @@
     $navigationKey ??= $attributes->get('data-navigation-key');
     $isPinnable ??= str_contains(trim((string) $attributes->get('data-pinnable')), '1');
     $isPinned ??= str_contains(trim((string) $attributes->get('data-pinned')), '1');
+    $usesDatabase = app(\Devletes\FilamentPinnableNavigation\Support\Navigation\PinPersistenceManager::class)->usesDatabase();
+    $pinIcon = (string) config('pinnable-navigation.pin_icon', 'heroicon-o-star');
+    $unpinIcon = (string) config('pinnable-navigation.unpin_icon', 'heroicon-s-star');
+    $outlinedIcon = base64_encode(\Filament\Support\generate_icon_html($pinIcon, size: \Filament\Support\Enums\IconSize::Small)->toHtml());
+    $filledIcon = base64_encode(\Filament\Support\generate_icon_html($unpinIcon, size: \Filament\Support\Enums\IconSize::Small)->toHtml());
 @endphp
 
 <li
@@ -113,15 +118,31 @@
         </a>
 
         @if ($isPinnable && filled($navigationKey))
-            <x-filament::icon-button
-                color="gray"
-                :icon="$isPinned ? \Filament\Support\Icons\Heroicon::Star : \Filament\Support\Icons\Heroicon::OutlinedStar"
-                icon-size="sm"
-                :label="$isPinned ? __('pinnable-navigation::pinnable-navigation.actions.unpin_navigation_item') : __('pinnable-navigation::pinnable-navigation.actions.pin_navigation_item')"
-                wire:click.stop="togglePin('{{ $navigationKey }}')"
-                wire:target="togglePin('{{ $navigationKey }}')"
-                class="fi-sidebar-pin-btn"
-            />
+            @if ($usesDatabase)
+                <x-filament::icon-button
+                    color="gray"
+                    :icon="$isPinned ? $unpinIcon : $pinIcon"
+                    icon-size="sm"
+                    :label="$isPinned ? __('pinnable-navigation::pinnable-navigation.actions.unpin_navigation_item') : __('pinnable-navigation::pinnable-navigation.actions.pin_navigation_item')"
+                    wire:click.stop="togglePin('{{ $navigationKey }}')"
+                    wire:target="togglePin('{{ $navigationKey }}')"
+                    class="fi-sidebar-pin-btn"
+                />
+            @else
+                <x-filament::icon-button
+                    color="gray"
+                    :icon="$pinIcon"
+                    icon-size="sm"
+                    :label="__('pinnable-navigation::pinnable-navigation.actions.pin_navigation_item')"
+                    :data-localstorage-pin-button="$navigationKey"
+                    :data-navigation-key="$navigationKey"
+                    :data-pin-label="__('pinnable-navigation::pinnable-navigation.actions.pin_navigation_item')"
+                    :data-unpin-label="__('pinnable-navigation::pinnable-navigation.actions.unpin_navigation_item')"
+                    :data-outlined-icon="$outlinedIcon"
+                    :data-filled-icon="$filledIcon"
+                    class="fi-sidebar-pin-btn"
+                />
+            @endif
         @endif
     </div>
 
@@ -164,3 +185,4 @@
         </ul>
     @endif
 </li>
+

@@ -1,5 +1,5 @@
 <?php
 
-use SalmanHijazi\PinnableNavigation\Tests\TestCase;
+use Devletes\FilamentPinnableNavigation\Tests\TestCase;
 
 pest()->extends(TestCase::class)->in('Feature', 'Unit');

@@ -1,18 +1,19 @@
 <?php
 
+use Devletes\FilamentPinnableNavigation\Livewire\PinnableSidebar;
+use Devletes\FilamentPinnableNavigation\PinnableNavigationPlugin;
+use Devletes\FilamentPinnableNavigation\Support\Navigation\NavigationKeyResolver;
+use Devletes\FilamentPinnableNavigation\Support\Navigation\PanelNavigationBuilder;
+use Devletes\FilamentPinnableNavigation\Tests\Fixtures\Filament\Pages\NavigationGroupedPage;
+use Devletes\FilamentPinnableNavigation\Tests\Support\CreatesNavigationTestTables;
+use Devletes\FilamentPinnableNavigation\Tests\Support\FilamentNavigationTestPanelFactory;
 use Filament\Facades\Filament;
-use SalmanHijazi\PinnableNavigation\Livewire\PinnableSidebar;
-use SalmanHijazi\PinnableNavigation\PinnableNavigationPlugin;
-use SalmanHijazi\PinnableNavigation\Support\Navigation\NavigationKeyResolver;
-use SalmanHijazi\PinnableNavigation\Support\Navigation\PanelNavigationBuilder;
-use SalmanHijazi\PinnableNavigation\Tests\Fixtures\Filament\Pages\NavigationGroupedPage;
-use SalmanHijazi\PinnableNavigation\Tests\Support\CreatesNavigationTestTables;
-use SalmanHijazi\PinnableNavigation\Tests\Support\FilamentNavigationTestPanelFactory;
 use Workbench\App\Models\User;
 
 uses(CreatesNavigationTestTables::class);
 
 beforeEach(function (): void {
+    config()->set('pinnable-navigation.database_enabled', true);
     $this->setUpNavigationTables();
 });
 

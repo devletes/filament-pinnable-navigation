@@ -1,12 +1,12 @@
 <?php
 
-namespace SalmanHijazi\PinnableNavigation;
+namespace Devletes\FilamentPinnableNavigation;
 
+use Devletes\FilamentPinnableNavigation\Livewire\PinnableSidebar;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Contracts\View\View;
-use SalmanHijazi\PinnableNavigation\Livewire\PinnableSidebar;
 
 class PinnableNavigationPlugin implements Plugin
 {
@@ -27,10 +27,6 @@ class PinnableNavigationPlugin implements Plugin
             ->renderHook(
                 PanelsRenderHook::PAGE_HEADER_ACTIONS_AFTER,
                 fn (): View => view('pinnable-navigation::panels.page-navigation-pin'),
-            )
-            ->renderHook(
-                PanelsRenderHook::STYLES_AFTER,
-                fn (): View => view('pinnable-navigation::panels.styles'),
             );
     }
 

@@ -1,34 +1,23 @@
 # Filament Pinnable Navigation
 
-`devletes/filament-pinnable-navigation` adds a pinnable sidebar layer to Filament 5 panels.
+`devletes/filament-pinnable-navigation` adds pinnable grouped sidebar navigation to Filament 5 panels.
 
 ## Requirements
 
-- PHP 8.2+
-- Laravel 11.28+ or 12.x
-- Filament 5.x
+- PHP `^8.2`
+- Filament `^5.0`
 
 ## Installation
-
-Install the package with Composer:
 
 ```bash
 composer require devletes/filament-pinnable-navigation
 ```
 
-Publish the config file if you need to override package defaults:
-
-```bash
-php artisan vendor:publish --tag="pinnable-navigation-config"
-```
-
-## Usage
-
-Activate the feature on any Filament panel by registering the plugin:
+Register the plugin on any panel:
 
 ```php
+use Devletes\FilamentPinnableNavigation\PinnableNavigationPlugin;
 use Filament\Panel;
-use SalmanHijazi\PinnableNavigation\PinnableNavigationPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -40,43 +29,87 @@ public function panel(Panel $panel): Panel
 }
 ```
 
-Once enabled, grouped navigation items get a star button in the sidebar and the current page can be pinned or unpinned from the page header actions area.
+## Configuration
 
-If you prefer a shorter alias, the package also provides `->pinnableNavigation()` as a convenience wrapper around the plugin registration.
-
-## Development
-
-Run the test suite with:
+Publish the config file if you want to customize behavior:
 
 ```bash
-composer test
+php artisan vendor:publish --tag="pinnable-navigation-config"
 ```
 
-Format the code with:
+Default configuration:
+
+```php
+return [
+    'database_enabled' => false,
+    'table_name' => 'pinned_navigation_items',
+    'group_title' => 'Pinned',
+    'group_icon' => 'heroicon-o-star',
+    'pin_icon' => 'heroicon-o-star',
+    'unpin_icon' => 'heroicon-s-star',
+    'show_in_resource' => true,
+    'accordion_mode' => true,
+];
+```
+
+Configuration options:
+
+- `database_enabled`: Persist pins in the database instead of browser localStorage.
+- `table_name`: Database table used when database persistence is enabled.
+- `group_title`: Label used for the synthetic pinned group.
+- `group_icon`: Optional icon shown for the pinned group.
+- `pin_icon`: Icon used when an item is not pinned.
+- `unpin_icon`: Icon used when an item is already pinned.
+- `show_in_resource`: Show the page-header pin toggle on Filament resource index pages.
+- `accordion_mode`: Keep only one managed navigation group open at a time. Disable it to fall back to Filament's default grouped navigation behavior.
+
+## Persistence
+
+By default, pin state is stored in browser localStorage per panel and authenticated user. No migration is required in this mode.
+
+If you want to persist pins in the database instead:
+
+1. Publish the config file.
+2. Set `database_enabled` to `true`.
+3. Run migrations.
 
 ```bash
-composer format
+php artisan migrate
 ```
 
-Start the local workbench app with:
+The package migration is registered automatically, so it does not need to be published separately.
+
+## Usage
+
+- Grouped navigation items can be pinned from the sidebar.
+- When `show_in_resource` is enabled, the current resource page can also be pinned or unpinned from the page header.
+- Pinned items are shown in a dedicated group at the top of the sidebar.
+
+## Local Testing
+
+This repository includes a Testbench workbench app for package development.
 
 ```bash
-composer serve
+composer build
+vendor\\bin\\testbench serve --host=127.0.0.1 --port=8080
 ```
 
-The workbench includes a Filament admin panel at `/admin`. Visiting `/` auto-signs in the seeded `test@example.com` user and redirects to that panel. You can also sign in manually at `/admin/login` with `test@example.com` / `password`.
+Then open [http://127.0.0.1:8080/admin](http://127.0.0.1:8080/admin) and sign in with:
 
-## Publishing checklist
+- `test@example.com`
+- `password`
 
-- Finalize the package behavior and translations
-- Verify the workbench panel behavior through `composer serve`
-- Tag a release and submit the repository to Packagist
+## Release Checklist
 
-If you want to publish under a different Packagist vendor later, update the package name in `composer.json` before the first public release.
+Before publishing a release:
+
+1. Run `composer test`.
+2. Run `vendor\\bin\\pint --test`.
+3. Run `composer validate --strict`.
+4. Create a semver tag such as `v1.0.0`.
+5. Submit the public repository to Packagist.
+6. Enable the Packagist GitHub webhook so pushes and tags sync automatically.
 
 ## License
 
-The MIT License (MIT). See [LICENSE.md](LICENSE.md) for details.
-
-
-
+MIT. See [LICENSE.md](LICENSE.md).

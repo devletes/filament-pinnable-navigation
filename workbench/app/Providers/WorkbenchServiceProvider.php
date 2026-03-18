@@ -2,9 +2,9 @@
 
 namespace Workbench\App\Providers;
 
+use Devletes\FilamentPinnableNavigation\PinnableNavigationPlugin;
 use Filament\Panel;
 use Illuminate\Support\ServiceProvider;
-use SalmanHijazi\PinnableNavigation\PinnableNavigationPlugin;
 
 class WorkbenchServiceProvider extends ServiceProvider
 {

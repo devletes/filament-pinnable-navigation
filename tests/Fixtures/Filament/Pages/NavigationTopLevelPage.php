@@ -1,6 +1,6 @@
 <?php
 
-namespace SalmanHijazi\PinnableNavigation\Tests\Fixtures\Filament\Pages;
+namespace Devletes\FilamentPinnableNavigation\Tests\Fixtures\Filament\Pages;
 
 use Filament\Pages\Page;
 

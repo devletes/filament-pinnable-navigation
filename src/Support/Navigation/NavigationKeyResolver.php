@@ -1,6 +1,6 @@
 <?php
 
-namespace SalmanHijazi\PinnableNavigation\Support\Navigation;
+namespace Devletes\FilamentPinnableNavigation\Support\Navigation;
 
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;

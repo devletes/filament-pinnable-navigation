@@ -1,12 +1,13 @@
 <?php
 
-use SalmanHijazi\PinnableNavigation\Support\Navigation\UserNavigationPinService;
-use SalmanHijazi\PinnableNavigation\Tests\Support\CreatesNavigationTestTables;
+use Devletes\FilamentPinnableNavigation\Support\Navigation\UserNavigationPinService;
+use Devletes\FilamentPinnableNavigation\Tests\Support\CreatesNavigationTestTables;
 use Workbench\App\Models\User;
 
 uses(CreatesNavigationTestTables::class);
 
 beforeEach(function (): void {
+    config()->set('pinnable-navigation.database_enabled', true);
     $this->setUpNavigationTables();
 });
 

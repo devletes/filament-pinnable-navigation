@@ -1,6 +1,6 @@
 <?php
 
-namespace SalmanHijazi\PinnableNavigation\Support\Navigation;
+namespace Devletes\FilamentPinnableNavigation\Support\Navigation;
 
 use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
@@ -267,7 +267,8 @@ class PanelNavigationBuilder
         }
 
         return $this->markGroup(
-            NavigationGroup::make(__('pinnable-navigation::pinnable-navigation.group_label'))
+            NavigationGroup::make((string) config('pinnable-navigation.group_title', __('pinnable-navigation::pinnable-navigation.group_label')))
+                ->icon(config('pinnable-navigation.group_icon', 'heroicon-o-star'))
                 ->items($items->all())
         );
     }
@@ -326,6 +327,14 @@ class PanelNavigationBuilder
 
     protected function markGroup(NavigationGroup $group): NavigationGroup
     {
+        if (! config('pinnable-navigation.accordion_mode', true)) {
+            return $group->extraSidebarAttributes([
+                ...$group->getExtraSidebarAttributes(),
+                'data-accordion-id' => null,
+                'data-accordion-managed' => '0',
+            ]);
+        }
+
         $label = $group->getLabel();
         $accordionId = blank($label) ? null : 'group:'.str((string) $label)->slug('-');
 

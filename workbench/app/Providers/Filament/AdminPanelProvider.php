@@ -2,6 +2,7 @@
 
 namespace Workbench\App\Providers\Filament;
 
+use Devletes\FilamentPinnableNavigation\PinnableNavigationPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -18,7 +19,6 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use SalmanHijazi\PinnableNavigation\PinnableNavigationPlugin;
 use Workbench\App\Filament\Resources\UserResource;
 
 class AdminPanelProvider extends PanelProvider

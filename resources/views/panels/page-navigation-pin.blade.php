@@ -1,1 +1,2 @@
-@livewire(\SalmanHijazi\PinnableNavigation\Livewire\PageNavigationPin::class)
+@livewire(\Devletes\FilamentPinnableNavigation\Livewire\PageNavigationPin::class)
+

@@ -1,13 +1,13 @@
 <?php
 
-namespace SalmanHijazi\PinnableNavigation\Livewire;
+namespace Devletes\FilamentPinnableNavigation\Livewire;
 
+use Devletes\FilamentPinnableNavigation\Support\Navigation\PanelNavigationBuilder;
+use Devletes\FilamentPinnableNavigation\Support\Navigation\UserNavigationPinService;
 use Filament\Facades\Filament;
 use Filament\Livewire\Sidebar;
 use Filament\Navigation\NavigationGroup;
 use Illuminate\Contracts\View\View;
-use SalmanHijazi\PinnableNavigation\Support\Navigation\PanelNavigationBuilder;
-use SalmanHijazi\PinnableNavigation\Support\Navigation\UserNavigationPinService;
 
 class PinnableSidebar extends Sidebar
 {

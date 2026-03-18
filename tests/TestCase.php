@@ -1,17 +1,26 @@
 <?php
 
-namespace SalmanHijazi\PinnableNavigation\Tests;
+namespace Devletes\FilamentPinnableNavigation\Tests;
 
+use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
+use BladeUI\Icons\BladeIconsServiceProvider;
+use Devletes\FilamentPinnableNavigation\PinnableNavigationServiceProvider;
+use Filament\Actions\ActionsServiceProvider;
 use Filament\FilamentServiceProvider;
-use Illuminate\Foundation\Application;
+use Filament\Support\SupportServiceProvider;
+use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
-use SalmanHijazi\PinnableNavigation\PinnableNavigationServiceProvider;
 
 abstract class TestCase extends Orchestra
 {
     protected function getPackageProviders($app): array
     {
         return [
+            BladeIconsServiceProvider::class,
+            BladeHeroiconsServiceProvider::class,
+            SupportServiceProvider::class,
+            ActionsServiceProvider::class,
+            LivewireServiceProvider::class,
             FilamentServiceProvider::class,
             PinnableNavigationServiceProvider::class,
         ];
@@ -19,6 +28,7 @@ abstract class TestCase extends Orchestra
 
     protected function getEnvironmentSetUp($app): void
     {
+        $app['config']->set('app.key', 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite.database', ':memory:');
         $app['config']->set('cache.default', 'array');

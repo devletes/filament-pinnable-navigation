@@ -1,10 +1,10 @@
 <?php
 
-namespace SalmanHijazi\PinnableNavigation\Tests\Support;
+namespace Devletes\FilamentPinnableNavigation\Tests\Support;
 
+use Devletes\FilamentPinnableNavigation\Tests\Fixtures\Filament\Pages\NavigationGroupedPage;
+use Devletes\FilamentPinnableNavigation\Tests\Fixtures\Filament\Pages\NavigationTopLevelPage;
 use Filament\Panel;
-use SalmanHijazi\PinnableNavigation\Tests\Fixtures\Filament\Pages\NavigationGroupedPage;
-use SalmanHijazi\PinnableNavigation\Tests\Fixtures\Filament\Pages\NavigationTopLevelPage;
 
 class FilamentNavigationTestPanelFactory
 {

@@ -1,8 +1,10 @@
 <?php
 
-namespace SalmanHijazi\PinnableNavigation;
+namespace Devletes\FilamentPinnableNavigation;
 
-use Filament\Panel;
+use Filament\Support\Assets\Css;
+use Filament\Support\Assets\Js;
+use Filament\Support\Facades\FilamentAsset;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -16,21 +18,20 @@ class PinnableNavigationServiceProvider extends PackageServiceProvider
             ->name(static::$name)
             ->hasConfigFile()
             ->hasMigration('create_pinned_navigation_items_table')
-            ->runsMigrations()
             ->hasTranslations()
             ->hasViews();
     }
 
-    public function packageRegistered(): void
+    public function bootingPackage(): void
     {
-        Panel::macro('pinnableNavigation', function (): Panel {
-            /** @var Panel $this */
-            if ($this->hasPlugin('pinnable-navigation')) {
-                return $this;
-            }
+        $this->package->runsMigrations((bool) config('pinnable-navigation.database_enabled'));
+    }
 
-            return $this->plugin(PinnableNavigationPlugin::make());
-        });
+    public function packageBooted(): void
+    {
+        FilamentAsset::register([
+            Css::make('pinnable-navigation', __DIR__.'/../resources/css/pinnable-navigation.css'),
+            Js::make('pinnable-navigation', __DIR__.'/../resources/js/pinnable-navigation.js'),
+        ], 'devletes/filament-pinnable-navigation');
     }
 }
-

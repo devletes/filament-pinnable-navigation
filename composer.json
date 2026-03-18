@@ -12,8 +12,8 @@
     ],
     "authors": [
         {
-            "name": "Salman Hijazi",
-            "email": "salman.hijazi@devletes.com"
+            "name": "Devletes",
+            "email": "packages@devletes.com"
         }
     ],
     "require": {
@@ -29,12 +29,12 @@
     },
     "autoload": {
         "psr-4": {
-            "SalmanHijazi\\PinnableNavigation\\": "src/"
+            "Devletes\\FilamentPinnableNavigation\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "SalmanHijazi\\PinnableNavigation\\Tests\\": "tests/",
+            "Devletes\\FilamentPinnableNavigation\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/",
             "Workbench\\Database\\Factories\\": "workbench/database/factories/",
             "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
@@ -67,7 +67,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "SalmanHijazi\\PinnableNavigation\\PinnableNavigationServiceProvider"
+                "Devletes\\FilamentPinnableNavigation\\PinnableNavigationServiceProvider"
             ]
         }
     },
@@ -77,11 +77,6 @@
     "support": {
         "issues": "https://github.com/devletes/filament-pinnable-navigation/issues",
         "source": "https://github.com/devletes/filament-pinnable-navigation"
-    },
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/devletes/filament-pinnable-navigation.git"
-        }
-    ]
+    }
 }
+

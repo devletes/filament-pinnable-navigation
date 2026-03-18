@@ -1,6 +1,6 @@
 <?php
 
-namespace SalmanHijazi\PinnableNavigation\Tests\Support;
+namespace Devletes\FilamentPinnableNavigation\Tests\Support;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,6 +18,10 @@ trait CreatesNavigationTestTables
             $table->string('password');
             $table->timestamps();
         });
+
+        if (! config('pinnable-navigation.database_enabled')) {
+            return;
+        }
 
         Schema::create(config('pinnable-navigation.table_name', 'pinned_navigation_items'), function (Blueprint $table): void {
             $table->id();

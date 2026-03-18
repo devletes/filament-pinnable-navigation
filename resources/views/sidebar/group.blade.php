@@ -23,20 +23,18 @@
             }
 
             const collapsedGroups = Array.isArray($store.sidebar.collapsedGroups) ? $store.sidebar.collapsedGroups : []
-            const openAccordionGroups = accordionGroups.filter((group) => ! collapsedGroups.includes(group))
+            const nonAccordionCollapsedGroups = collapsedGroups.filter((group) => ! accordionGroups.includes(group))
+            const isCollapsed = $store.sidebar.groupIsCollapsed(this.label)
 
-            if ($store.sidebar.groupIsCollapsed(this.label) || openAccordionGroups.length > 1) {
-                const nonAccordionCollapsedGroups = collapsedGroups.filter((group) => ! accordionGroups.includes(group))
-
-                $store.sidebar.collapsedGroups = [
+            $store.sidebar.collapsedGroups = isCollapsed
+                ? [
                     ...nonAccordionCollapsedGroups,
                     ...accordionGroups.filter((group) => group !== this.label),
                 ]
-
-                return
-            }
-
-            $store.sidebar.collapsedGroups = [...new Set(collapsedGroups.concat([this.label]))]
+                : [
+                    ...nonAccordionCollapsedGroups,
+                    ...accordionGroups,
+                ]
         },
     }"
     data-group-label="{{ $groupLabel }}"
@@ -209,12 +207,8 @@
                 $itemIsPinned = str_contains(trim((string) $itemExtraAttributes->get('data-pinned')), '1');
 
                 if ($icon) {
-                    if ($hasDropdown || (blank($itemIcon) && blank($itemActiveIcon))) {
-                        $itemIcon = null;
-                        $itemActiveIcon = null;
-                    } else {
-                        throw new \Exception('Navigation group [' . $label . '] has an icon but one or more of its items also have icons. Either the group or its items can have icons, but not both. This is to ensure a proper user experience.');
-                    }
+                    $itemIcon = null;
+                    $itemActiveIcon = null;
                 }
             @endphp
 
@@ -244,3 +238,4 @@
         @endforeach
     </ul>
 </li>
+

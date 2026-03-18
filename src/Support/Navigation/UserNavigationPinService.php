@@ -1,15 +1,23 @@
 <?php
 
-namespace SalmanHijazi\PinnableNavigation\Support\Navigation;
+namespace Devletes\FilamentPinnableNavigation\Support\Navigation;
 
+use Devletes\FilamentPinnableNavigation\Models\PinnableNavigationPin;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
-use SalmanHijazi\PinnableNavigation\Models\PinnableNavigationPin;
 
 class UserNavigationPinService
 {
+    public function __construct(
+        protected PinPersistenceManager $persistenceManager,
+    ) {}
+
     public function getPinnedKeys(Authenticatable $user, string $panelId): Collection
     {
+        if (! $this->persistenceManager->usesDatabase()) {
+            return collect();
+        }
+
         return PinnableNavigationPin::query()
             ->where('user_type', $user->getMorphClass())
             ->where('user_id', $user->getAuthIdentifier())
@@ -20,6 +28,10 @@ class UserNavigationPinService
 
     public function isPinned(Authenticatable $user, string $panelId, string $key): bool
     {
+        if (! $this->persistenceManager->usesDatabase()) {
+            return false;
+        }
+
         $key = $this->normalizeKey($key);
 
         return PinnableNavigationPin::query()
@@ -32,6 +44,10 @@ class UserNavigationPinService
 
     public function pin(Authenticatable $user, string $panelId, string $key): void
     {
+        if (! $this->persistenceManager->usesDatabase()) {
+            return;
+        }
+
         $key = $this->normalizeKey($key);
 
         PinnableNavigationPin::query()->firstOrCreate([
@@ -44,6 +60,10 @@ class UserNavigationPinService
 
     public function unpin(Authenticatable $user, string $panelId, string $key): void
     {
+        if (! $this->persistenceManager->usesDatabase()) {
+            return;
+        }
+
         $key = $this->normalizeKey($key);
 
         PinnableNavigationPin::query()
@@ -56,6 +76,10 @@ class UserNavigationPinService
 
     public function toggle(Authenticatable $user, string $panelId, string $key): bool
     {
+        if (! $this->persistenceManager->usesDatabase()) {
+            return false;
+        }
+
         $key = $this->normalizeKey($key);
 
         if ($this->isPinned($user, $panelId, $key)) {

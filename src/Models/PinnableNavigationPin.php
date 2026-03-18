@@ -1,6 +1,6 @@
 <?php
 
-namespace SalmanHijazi\PinnableNavigation\Models;
+namespace Devletes\FilamentPinnableNavigation\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -24,4 +24,3 @@ class PinnableNavigationPin extends Model
         return $this->morphTo();
     }
 }
-
