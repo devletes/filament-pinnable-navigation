@@ -141,3 +141,59 @@ it('hides the resource page header pin when show_in_resource is disabled', funct
     expect($pagePinHtml)->not->toContain('data-localstorage-page-pin')
         ->and($pagePinHtml)->not->toContain('fi-icon-btn');
 });
+
+it('renders the resource page header pin on index pages', function (): void {
+    $user = User::query()->create([
+        'name' => 'Test User',
+        'email' => 'test@example.com',
+        'password' => 'password',
+    ]);
+
+    $panel = FilamentNavigationTestPanelFactory::make('admin-test')
+        ->resources([
+            UserResource::class,
+        ])
+        ->userMenu(false)
+        ->databaseNotifications(false);
+    Filament::setCurrentPanel($panel);
+    $this->actingAs($user);
+
+    $request = request()->create('/admin-test/users', 'GET');
+    Route::name('filament.admin-test.resources.users.index')->get('/admin-test/users', fn () => 'ok');
+    $route = Route::getRoutes()->getByName('filament.admin-test.resources.users.index');
+    $request->setRouteResolver(fn () => $route->bind($request));
+    app()->instance('request', $request);
+    app()->instance('originalRequest', $request);
+
+    Livewire::test(PageNavigationPin::class)
+        ->assertSet('isVisible', true)
+        ->assertDontSeeHtml('data-page-navigation-pin-placement="after-heading"');
+});
+
+it('hides the resource page header pin on non-index resource pages', function (): void {
+    $user = User::query()->create([
+        'name' => 'Test User',
+        'email' => 'test@example.com',
+        'password' => 'password',
+    ]);
+
+    $panel = FilamentNavigationTestPanelFactory::make('admin-test')
+        ->resources([
+            UserResource::class,
+        ])
+        ->userMenu(false)
+        ->databaseNotifications(false);
+    Filament::setCurrentPanel($panel);
+    $this->actingAs($user);
+
+    $request = request()->create('/admin-test/users/1', 'GET');
+    Route::name('filament.admin-test.resources.users.view')->get('/admin-test/users/{record}', fn () => 'ok');
+    $route = Route::getRoutes()->getByName('filament.admin-test.resources.users.view');
+    $request->setRouteResolver(fn () => $route->bind($request));
+    app()->instance('request', $request);
+    app()->instance('originalRequest', $request);
+
+    Livewire::test(PageNavigationPin::class)
+        ->assertSet('isVisible', false)
+        ->assertDontSeeHtml('data-page-navigation-pin-placement="after-heading"');
+});

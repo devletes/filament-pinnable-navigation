@@ -1,15 +1,47 @@
 @php
     $sidebarCollapsible ??= filament()->isSidebarCollapsibleOnDesktop();
     $groupIcon = config('pinnable-navigation.group_icon', 'heroicon-o-star');
+    $groupLabel = 'group:pinned';
+    $accordionManaged = (bool) config('pinnable-navigation.accordion_mode', true);
+    $groupTitle = (string) config('pinnable-navigation.group_title', __('pinnable-navigation::pinnable-navigation.group_label'));
 @endphp
 
 <li
-    class="fi-sidebar-group fi-localstorage-pinned-group"
+    x-data="{
+        label: @js($groupLabel),
+        accordionManaged: @js($accordionManaged),
+        toggleGroup() {
+            if (! this.accordionManaged) {
+                $store.sidebar.toggleCollapsedGroup(this.label)
+                return
+            }
+
+            const managedGroups = accordionGroups.includes(this.label)
+                ? accordionGroups
+                : [...accordionGroups, this.label]
+            const collapsedGroups = Array.isArray($store.sidebar.collapsedGroups) ? $store.sidebar.collapsedGroups : []
+            const nonAccordionCollapsedGroups = collapsedGroups.filter((group) => ! managedGroups.includes(group))
+            const isCollapsed = $store.sidebar.groupIsCollapsed(this.label)
+
+            $store.sidebar.collapsedGroups = isCollapsed
+                ? [
+                    ...nonAccordionCollapsedGroups,
+                    ...managedGroups.filter((group) => group !== this.label),
+                ]
+                : [
+                    ...nonAccordionCollapsedGroups,
+                    ...managedGroups,
+                ]
+        },
+    }"
+    class="fi-sidebar-group fi-localstorage-pinned-group fi-collapsible"
     data-localstorage-pinned-group="1"
-    data-group-label="group:pinned"
+    data-group-label="{{ $groupLabel }}"
+    x-bind:class="{ 'fi-collapsed': $store.sidebar.groupIsCollapsed(label) }"
     hidden
 >
     <div
+        x-on:click="toggleGroup()"
         @if ($sidebarCollapsible)
             x-show="$store.sidebar.isOpen"
             x-transition:enter="fi-transition-enter"
@@ -23,17 +55,30 @@
         @endif
 
         <span class="fi-sidebar-group-label">
-            {{ config('pinnable-navigation.group_title', __('pinnable-navigation::pinnable-navigation.group_label')) }}
+            {{ $groupTitle }}
         </span>
+
+        <x-filament::icon-button
+            color="gray"
+            :icon="\Filament\Support\Icons\Heroicon::ChevronUp"
+            :icon-alias="\Filament\View\PanelsIconAlias::SIDEBAR_GROUP_COLLAPSE_BUTTON"
+            :label="$groupTitle"
+            x-bind:aria-expanded="! $store.sidebar.groupIsCollapsed(label)"
+            x-on:click.stop="toggleGroup()"
+            class="fi-sidebar-group-collapse-btn"
+        />
     </div>
 
     <ul
         @if ($sidebarCollapsible)
-            x-show="$store.sidebar.isOpen"
+            x-show="$store.sidebar.isOpen ? ! $store.sidebar.groupIsCollapsed(label) : true"
             x-transition:enter="fi-transition-enter"
             x-transition:enter-start="fi-transition-enter-start"
             x-transition:enter-end="fi-transition-enter-end"
+        @else
+            x-show="! $store.sidebar.groupIsCollapsed(label)"
         @endif
+        x-collapse.duration.200ms
         class="fi-sidebar-group-items"
         data-localstorage-pinned-items
     ></ul>

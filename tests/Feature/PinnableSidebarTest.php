@@ -1,5 +1,6 @@
 <?php
 
+use Devletes\FilamentPinnableNavigation\Livewire\PageNavigationPin;
 use Devletes\FilamentPinnableNavigation\Livewire\PinnableSidebar;
 use Devletes\FilamentPinnableNavigation\PinnableNavigationPlugin;
 use Devletes\FilamentPinnableNavigation\Support\Navigation\NavigationKeyResolver;
@@ -8,6 +9,7 @@ use Devletes\FilamentPinnableNavigation\Tests\Fixtures\Filament\Pages\Navigation
 use Devletes\FilamentPinnableNavigation\Tests\Support\CreatesNavigationTestTables;
 use Devletes\FilamentPinnableNavigation\Tests\Support\FilamentNavigationTestPanelFactory;
 use Filament\Facades\Filament;
+use Livewire\Livewire;
 use Workbench\App\Models\User;
 
 uses(CreatesNavigationTestTables::class);
@@ -24,7 +26,10 @@ it('toggles pins for the current panel', function (): void {
         'password' => 'password',
     ]);
 
-    $panel = FilamentNavigationTestPanelFactory::make('admin-test')->plugin(PinnableNavigationPlugin::make());
+    $panel = FilamentNavigationTestPanelFactory::make('admin-test')
+        ->userMenu(false)
+        ->databaseNotifications(false)
+        ->plugin(PinnableNavigationPlugin::make());
     Filament::setCurrentPanel($panel);
     $this->actingAs($user);
 
@@ -41,7 +46,9 @@ it('toggles pins for the current panel', function (): void {
     ]);
 
     $navigation = app(PanelNavigationBuilder::class)->build($panel, $user);
+
     expect($navigation[1]->getLabel())->toBe('Pinned');
+    expect($navigation[1]->getItems())->toHaveCount(1);
 
     $sidebar->togglePin($navigationKey);
 
@@ -71,8 +78,36 @@ it('keeps pin state isolated per panel', function (): void {
     $employeePanel = FilamentNavigationTestPanelFactory::make('employee-test')->plugin(PinnableNavigationPlugin::make());
     Filament::setCurrentPanel($employeePanel);
 
-    $navigation = app(PanelNavigationBuilder::class)->build($employeePanel, $user);
+    expect(app(PanelNavigationBuilder::class)->build($employeePanel, $user))
+        ->sequence(
+            fn ($group) => $group->label->toBeNull(),
+            fn ($group) => $group->label->not->toBe('Pinned'),
+        );
+});
 
-    expect($navigation)->toHaveCount(2)
-        ->and($navigation[1]->getLabel())->toBe('Team');
+it('does not render pin localstorage metadata in database mode', function (): void {
+    $user = User::query()->create([
+        'name' => 'Test User',
+        'email' => 'test@example.com',
+        'password' => 'password',
+    ]);
+
+    $panel = FilamentNavigationTestPanelFactory::make('admin-test')
+        ->userMenu(false)
+        ->databaseNotifications(false)
+        ->plugin(PinnableNavigationPlugin::make());
+    Filament::setCurrentPanel($panel);
+    $this->actingAs($user);
+
+    $sidebarHtml = Livewire::test(PinnableSidebar::class)->html();
+
+    Livewire::test(PageNavigationPin::class)
+        ->assertSet('usesDatabase', true)
+        ->assertSet('localStorageKey', null);
+
+    expect($sidebarHtml)->toContain('data-persistence-mode="database"')
+        ->toContain('const managedGroups = accordionGroups.includes(this.label)')
+        ->not->toContain('data-localstorage-key=')
+        ->not->toContain('data-localstorage-pinned-group="1"')
+        ->not->toContain('data-localstorage-pin-button=');
 });

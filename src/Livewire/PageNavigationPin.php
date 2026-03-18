@@ -75,7 +75,9 @@ class PageNavigationPin extends Component
             return;
         }
 
-        $this->localStorageKey = $persistenceManager->getLocalStorageKey($panel, $user);
+        if (! $this->usesDatabase) {
+            $this->localStorageKey = $persistenceManager->getLocalStorageKey($panel, $user);
+        }
 
         $currentKey = app(NavigationKeyResolver::class)
             ->resolveCurrentPageKey($panel);
@@ -84,8 +86,13 @@ class PageNavigationPin extends Component
             return;
         }
 
-        if (str_starts_with($currentKey, 'resource:') && ! config('pinnable-navigation.show_in_resource', true)) {
-            return;
+        if (str_starts_with($currentKey, 'resource:')) {
+            $routeRequest = app()->bound('originalRequest') ? app('originalRequest') : request();
+            $routeName = (string) $routeRequest->route()?->getName();
+
+            if ((! config('pinnable-navigation.show_in_resource', true)) || (! str_ends_with($routeName, '.index'))) {
+                return;
+            }
         }
 
         $item = app(PanelNavigationBuilder::class)

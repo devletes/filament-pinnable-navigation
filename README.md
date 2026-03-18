@@ -70,14 +70,14 @@ By default, pin state is stored in browser localStorage per panel and authentica
 If you want to persist pins in the database instead:
 
 1. Publish the config file.
-2. Set `database_enabled` to `true`.
-3. Run migrations.
+2. Publish the package migrations.
+3. Set `database_enabled` to `true`.
+4. Run migrations.
 
 ```bash
+php artisan vendor:publish --tag="pinnable-navigation-migrations"
 php artisan migrate
 ```
-
-The package migration is registered automatically, so it does not need to be published separately.
 
 ## Usage
 

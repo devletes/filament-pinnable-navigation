@@ -5,6 +5,10 @@ use Devletes\FilamentPinnableNavigation\PinnableNavigationPlugin;
 use Filament\Panel;
 use Workbench\App\Providers\Filament\AdminPanelProvider;
 
+beforeEach(function (): void {
+    config()->set('pinnable-navigation.database_enabled', false);
+});
+
 it('registers pinnable navigation as a Filament panel plugin', function (): void {
     $panel = Panel::make()
         ->id('test')

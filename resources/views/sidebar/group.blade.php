@@ -22,18 +22,21 @@
                 return
             }
 
+            const managedGroups = accordionGroups.includes(this.label)
+                ? accordionGroups
+                : [...accordionGroups, this.label]
             const collapsedGroups = Array.isArray($store.sidebar.collapsedGroups) ? $store.sidebar.collapsedGroups : []
-            const nonAccordionCollapsedGroups = collapsedGroups.filter((group) => ! accordionGroups.includes(group))
+            const nonAccordionCollapsedGroups = collapsedGroups.filter((group) => ! managedGroups.includes(group))
             const isCollapsed = $store.sidebar.groupIsCollapsed(this.label)
 
             $store.sidebar.collapsedGroups = isCollapsed
                 ? [
                     ...nonAccordionCollapsedGroups,
-                    ...accordionGroups.filter((group) => group !== this.label),
+                    ...managedGroups.filter((group) => group !== this.label),
                 ]
                 : [
                     ...nonAccordionCollapsedGroups,
-                    ...accordionGroups,
+                    ...managedGroups,
                 ]
         },
     }"
@@ -238,4 +241,5 @@
         @endforeach
     </ul>
 </li>
+
 

@@ -12,8 +12,9 @@
 */
 
 return [
-    // Persist pinned items in the database. When enabled, run the package migration.
-    'database_enabled' => false,
+    // Persist pinned items in the database. When enabled, publish the package
+    // migration first, then run your application's migrations.
+    'database_enabled' => true,
 
     // Database table used to store pinned navigation items when database persistence is enabled.
     'table_name' => 'pinned_navigation_items',

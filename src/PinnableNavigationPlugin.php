@@ -25,7 +25,7 @@ class PinnableNavigationPlugin implements Plugin
         $panel
             ->sidebarLivewireComponent(PinnableSidebar::class)
             ->renderHook(
-                PanelsRenderHook::PAGE_HEADER_ACTIONS_AFTER,
+                PanelsRenderHook::PAGE_HEADER_ACTIONS_BEFORE,
                 fn (): View => view('pinnable-navigation::panels.page-navigation-pin'),
             );
     }

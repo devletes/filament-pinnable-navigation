@@ -22,11 +22,6 @@ class PinnableNavigationServiceProvider extends PackageServiceProvider
             ->hasViews();
     }
 
-    public function bootingPackage(): void
-    {
-        $this->package->runsMigrations((bool) config('pinnable-navigation.database_enabled'));
-    }
-
     public function packageBooted(): void
     {
         FilamentAsset::register([

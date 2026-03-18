@@ -122,20 +122,20 @@
             x-data="{
                 accordionGroups: @js($accordionGroupIds),
                 normalizeCollapsedGroups() {
-                    const defaultCollapsedGroups = @js($defaultCollapsedGroups)
+                    const defaultCollapsedGroups = @js($defaultCollapsedGroups);
                     const currentCollapsedGroups = Array.isArray($store.sidebar.collapsedGroups)
                         ? $store.sidebar.collapsedGroups
-                        : null
+                        : null;
 
                     if (currentCollapsedGroups !== null) {
-                        localStorage.setItem('collapsedGroups', JSON.stringify(currentCollapsedGroups))
-                        return currentCollapsedGroups
+                        localStorage.setItem('collapsedGroups', JSON.stringify(currentCollapsedGroups));
+                        return currentCollapsedGroups;
                     }
 
-                    $store.sidebar.collapsedGroups = defaultCollapsedGroups
-                    localStorage.setItem('collapsedGroups', JSON.stringify(defaultCollapsedGroups))
+                    $store.sidebar.collapsedGroups = defaultCollapsedGroups;
+                    localStorage.setItem('collapsedGroups', JSON.stringify(defaultCollapsedGroups));
 
-                    return defaultCollapsedGroups
+                    return defaultCollapsedGroups;
                 },
             }"
             x-init="normalizeCollapsedGroups()"
@@ -143,7 +143,7 @@
             data-accordion-enabled="{{ $accordionEnabled ? '1' : '0' }}"
             data-accordion-groups='@json($accordionGroupIds)'
             data-persistence-mode="{{ $usesDatabase ? 'database' : 'localstorage' }}"
-            @if (filled($localStorageKey))
+            @if ((! $usesDatabase) && filled($localStorageKey))
                 data-localstorage-key="{{ $localStorageKey }}"
             @endif
         >
@@ -226,4 +226,8 @@
 
     <x-filament-actions::modals />
 </div>
+
+
+
+
 

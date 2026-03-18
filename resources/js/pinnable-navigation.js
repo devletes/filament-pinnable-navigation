@@ -85,14 +85,6 @@
         });
     };
 
-    namespace.refreshPagePin = function (button) {
-        const storageKey = button.dataset.localstorageKey;
-        const navigationKey = button.dataset.navigationKey;
-        const isPinned = namespace.getPinnedKeys(storageKey).includes(navigationKey);
-
-        namespace.updateButtonState(button, isPinned);
-    };
-
     namespace.syncGroupedBorder = function (item, isFirst, isLast) {
         const border = item.querySelector('.fi-sidebar-item-grouped-border');
 
@@ -166,7 +158,10 @@
         });
 
         root.querySelectorAll('[data-localstorage-page-pin]').forEach((button) => {
-            namespace.refreshPagePin(button);
+            namespace.updateButtonState(
+                button,
+                namespace.getPinnedKeys(button.dataset.localstorageKey).includes(button.dataset.navigationKey),
+            );
         });
     };
 
@@ -194,6 +189,14 @@
 
     document.addEventListener('DOMContentLoaded', () => namespace.refresh(document));
     document.addEventListener('livewire:navigated', () => namespace.refresh(document));
+
+    document.addEventListener('livewire:init', () => {
+        if (typeof window.Livewire?.hook !== 'function') {
+            return;
+        }
+
+        window.Livewire.hook('morph.updated', ({ el }) => namespace.refresh(el));
+    });
 
     namespace.refresh(document);
 })();

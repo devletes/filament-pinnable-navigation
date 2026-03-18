@@ -1,4 +1,4 @@
-<div>
+<div class="fi-page-navigation-pin-source">
     @php
         $pinIcon = (string) config('pinnable-navigation.pin_icon', 'heroicon-o-star');
         $unpinIcon = (string) config('pinnable-navigation.unpin_icon', 'heroicon-s-star');
