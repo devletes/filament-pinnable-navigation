@@ -85,20 +85,6 @@ The package migration is registered automatically, so it does not need to be pub
 - When `show_in_resource` is enabled, the current resource page can also be pinned or unpinned from the page header.
 - Pinned items are shown in a dedicated group at the top of the sidebar.
 
-## Local Testing
-
-This repository includes a Testbench workbench app for package development.
-
-```bash
-composer build
-vendor\\bin\\testbench serve --host=127.0.0.1 --port=8080
-```
-
-Then open [http://127.0.0.1:8080/admin](http://127.0.0.1:8080/admin) and sign in with:
-
-- `test@example.com`
-- `password`
-
 ## Release Checklist
 
 Before publishing a release:
