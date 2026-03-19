@@ -1,6 +1,11 @@
 # Filament Pinnable Navigation
 
-`devletes/filament-pinnable-navigation` adds pinnable grouped sidebar navigation to Filament 5 panels.
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/devletes/filament-pinnable-navigation.svg?style=flat-square)](https://packagist.org/packages/devletes/filament-pinnable-navigation)
+[![Total Downloads](https://img.shields.io/packagist/dt/devletes/filament-pinnable-navigation.svg?style=flat-square)](https://packagist.org/packages/devletes/filament-pinnable-navigation)
+[![License](https://img.shields.io/packagist/l/devletes/filament-pinnable-navigation.svg?style=flat-square)](https://packagist.org/packages/devletes/filament-pinnable-navigation)
+[![GitHub Stars](https://img.shields.io/github/stars/devletes/filament-pinnable-navigation?style=flat-square)](https://github.com/devletes/filament-pinnable-navigation/stargazers)
+
+Allow users to dynamically pin sidebar navigation items to a pinned .
 
 ## Requirements
 
@@ -106,3 +111,6 @@ php artisan migrate
 ## License
 
 MIT. See [LICENSE.md](LICENSE.md).
+
+
+
