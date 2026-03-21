@@ -6,6 +6,7 @@ use Devletes\FilamentPinnableNavigation\Support\Navigation\UserNavigationPinServ
 use Devletes\FilamentPinnableNavigation\Tests\Fixtures\Filament\Pages\NavigationGroupedPage;
 use Devletes\FilamentPinnableNavigation\Tests\Support\CreatesNavigationTestTables;
 use Devletes\FilamentPinnableNavigation\Tests\Support\FilamentNavigationTestPanelFactory;
+use Filament\Facades\Filament;
 use Workbench\App\Models\User;
 
 uses(CreatesNavigationTestTables::class);
@@ -71,4 +72,30 @@ it('clones pinned items without removing the original item or its badge', functi
         ->and($nativeGroup->getItems()[0]->getLabel())->toBe('Reports')
         ->and($pinnedGroup->getItems()[0]->getBadge())->toBe('7')
         ->and($nativeGroup->getItems()[0]->getBadge())->toBe('7');
+});
+
+it('keeps clustered child items out of the main navigation while preserving the cluster root', function (): void {
+    $user = User::query()->create([
+        'name' => 'Test User',
+        'email' => 'test@example.com',
+        'password' => 'password',
+    ]);
+
+    $panel = FilamentNavigationTestPanelFactory::makeWithCluster();
+    Filament::setCurrentPanel($panel);
+    $key = app(NavigationKeyResolver::class)->forPage(NavigationGroupedPage::class);
+
+    app(UserNavigationPinService::class)->pin($user, $panel->getId(), $key);
+
+    $navigation = app(PanelNavigationBuilder::class)->build($panel, $user);
+
+    expect($navigation)->toHaveCount(3)
+        ->and($navigation[0]->getLabel())->toBeNull()
+        ->and(collect($navigation[0]->getItems())->map->getLabel()->all())->toBe([
+            'Overview',
+            'Settings',
+        ])
+        ->and($navigation[1]->getLabel())->toBe('Pinned')
+        ->and($navigation[1]->getItems()[0]->getLabel())->toBe('Reports')
+        ->and($navigation[2]->getLabel())->toBe('Team');
 });
