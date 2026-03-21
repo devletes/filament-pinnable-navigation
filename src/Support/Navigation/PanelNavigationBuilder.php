@@ -109,6 +109,10 @@ class PanelNavigationBuilder
         $items = [];
 
         foreach ($panel->getPages() as $pageClass) {
+            if (filled($pageClass::getCluster())) {
+                continue;
+            }
+
             if (! $pageClass::shouldRegisterNavigation() || ! $pageClass::canAccess()) {
                 continue;
             }
@@ -124,6 +128,10 @@ class PanelNavigationBuilder
         }
 
         foreach ($panel->getResources() as $resourceClass) {
+            if (filled($resourceClass::getCluster())) {
+                continue;
+            }
+
             if (! $resourceClass::shouldRegisterNavigation()) {
                 continue;
             }

@@ -111,3 +111,28 @@ it('does not render pin localstorage metadata in database mode', function (): vo
         ->not->toContain('data-localstorage-pinned-group="1"')
         ->not->toContain('data-localstorage-pin-button=');
 });
+
+it('renders only the cluster root in the main sidebar when cluster children exist', function (): void {
+    $user = User::query()->create([
+        'name' => 'Test User',
+        'email' => 'test@example.com',
+        'password' => 'password',
+    ]);
+
+    $panel = FilamentNavigationTestPanelFactory::makeWithCluster('admin-test')
+        ->userMenu(false)
+        ->databaseNotifications(false)
+        ->plugin(PinnableNavigationPlugin::make());
+    Filament::setCurrentPanel($panel);
+    $this->actingAs($user);
+
+    $navigationKey = app(NavigationKeyResolver::class)->forPage(NavigationGroupedPage::class);
+    app(PinnableSidebar::class)->togglePin($navigationKey);
+
+    $sidebarHtml = Livewire::test(PinnableSidebar::class)->html();
+
+    expect($sidebarHtml)->toContain('Settings')
+        ->toContain('Pinned')
+        ->not->toContain('Cluster Reports')
+        ->not->toContain('Cluster Preferences');
+});
