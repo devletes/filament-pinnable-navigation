@@ -107,6 +107,7 @@ class PanelNavigationBuilder
     protected function getSourceItems(Panel $panel): array
     {
         $items = [];
+        $seenItems = [];
 
         foreach ($panel->getPages() as $pageClass) {
             if (filled($pageClass::getCluster())) {
@@ -118,11 +119,11 @@ class PanelNavigationBuilder
             }
 
             foreach ($pageClass::getNavigationItems() as $item) {
-                $items[] = $this->markItem(
+                $this->pushSourceItem(
+                    $items,
+                    $seenItems,
                     $item,
                     $this->keyResolver->forPage($pageClass),
-                    false,
-                    false,
                 );
             }
         }
@@ -145,17 +146,17 @@ class PanelNavigationBuilder
             }
 
             foreach ($resourceClass::getNavigationItems() as $item) {
-                $items[] = $this->markItem(
+                $this->pushSourceItem(
+                    $items,
+                    $seenItems,
                     $item,
                     $this->keyResolver->forResource($resourceClass),
-                    false,
-                    false,
                 );
             }
         }
 
         foreach ($panel->getNavigationItems() as $item) {
-            $items[] = $this->markItem($item, null, false, false);
+            $this->pushSourceItem($items, $seenItems, $item);
         }
 
         return $items;
@@ -177,7 +178,9 @@ class PanelNavigationBuilder
                 $parentItems = $groupedItems->groupBy(fn (NavigationItem $item): string => $item->getParentItem() ?? '');
 
                 $items = $parentItems->get('', collect())
-                    ->keyBy(fn (NavigationItem $item): string => $item->getLabel());
+                    ->groupBy(fn (NavigationItem $item): string => (string) $item->getLabel())
+                    ->map(fn (Collection $items): NavigationItem => $this->resolvePreferredNavigationItem($items))
+                    ->keyBy(fn (NavigationItem $item): string => (string) $item->getLabel());
 
                 $parentItems->except([''])->each(function (Collection $children, string $parentLabel) use ($items): void {
                     if (! $items->has($parentLabel)) {
@@ -283,21 +286,10 @@ class PanelNavigationBuilder
 
     protected function isPinnable(NavigationItem $item): bool
     {
-        $key = Arr::get($item->getExtraAttributes(), 'data-navigation-key');
-
-        if (blank($item->getGroup())) {
-            return false;
-        }
-
-        if (blank($key) || blank($item->getUrl())) {
-            return false;
-        }
-
-        if (filled($item->getChildItems())) {
-            return false;
-        }
-
-        return $key !== 'page:FilamentPagesDashboard';
+        return $this->canMarkAsPinnable(
+            $item,
+            Arr::get($item->getExtraAttributes(), 'data-navigation-key'),
+        );
     }
 
     protected function clonePinnedItem(NavigationItem $item, ?string $key): NavigationItem
@@ -351,5 +343,48 @@ class PanelNavigationBuilder
             'data-accordion-id' => $accordionId,
             'data-accordion-managed' => filled($accordionId) ? '1' : '0',
         ]);
+    }
+
+    /**
+     * @param  array<NavigationItem>  $items
+     * @param  array<string, true>  $seenItems
+     */
+    protected function pushSourceItem(array &$items, array &$seenItems, NavigationItem $item, ?string $key = null): void
+    {
+        $identity = $this->getNavigationItemIdentity($item, $key);
+
+        if (array_key_exists($identity, $seenItems)) {
+            return;
+        }
+
+        $items[] = $this->markItem(clone $item, $key, false, false);
+        $seenItems[$identity] = true;
+    }
+
+    protected function getNavigationItemIdentity(NavigationItem $item, ?string $key = null): string
+    {
+        $key ??= Arr::get($item->getExtraAttributes(), 'data-navigation-key');
+
+        if (filled($key)) {
+            return "key:{$key}";
+        }
+
+        return implode('|', [
+            'fallback',
+            (string) $item->getGroup(),
+            (string) $item->getParentItem(),
+            (string) $item->getLabel(),
+            (string) $item->getUrl(),
+        ]);
+    }
+
+    /**
+     * @param  Collection<int, NavigationItem>  $items
+     */
+    protected function resolvePreferredNavigationItem(Collection $items): NavigationItem
+    {
+        return $items
+            ->sortByDesc(fn (NavigationItem $item): int => filled(Arr::get($item->getExtraAttributes(), 'data-navigation-key')) ? 1 : 0)
+            ->first();
     }
 }

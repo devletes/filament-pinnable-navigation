@@ -25,8 +25,8 @@ class PinnableNavigationServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         FilamentAsset::register([
-            Css::make('pinnable-navigation', __DIR__.'/../resources/css/pinnable-navigation.css'),
-            Js::make('pinnable-navigation', __DIR__.'/../resources/js/pinnable-navigation.js'),
+            Css::make('pinnable-navigation', __DIR__.'/../dist/pinnable-navigation.css'),
+            Js::make('pinnable-navigation', __DIR__.'/../dist/pinnable-navigation.js'),
         ], 'devletes/filament-pinnable-navigation');
     }
 }

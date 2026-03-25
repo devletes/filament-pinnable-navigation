@@ -1,0 +1,11 @@
+{
+    "private": true,
+    "scripts": {
+        "build": "npm run build:css && npm run build:js",
+        "build:css": "esbuild resources/css/pinnable-navigation.css --bundle --minify --outfile=dist/pinnable-navigation.css",
+        "build:js": "esbuild resources/js/pinnable-navigation.js --bundle --minify --format=iife --outfile=dist/pinnable-navigation.js"
+    },
+    "devDependencies": {
+        "esbuild": "^0.25.2"
+    }
+}
