@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/packagist/l/devletes/filament-pinnable-navigation.svg?style=flat-square)](https://packagist.org/packages/devletes/filament-pinnable-navigation)
 [![GitHub Stars](https://img.shields.io/github/stars/devletes/filament-pinnable-navigation?style=flat-square)](https://github.com/devletes/filament-pinnable-navigation/stargazers)
 
-Allow users to dynamically pin sidebar navigation items to a pinned .
+Allow users to dynamically pin sidebar navigation items to a pinned group.
 
 ## Requirements
 
