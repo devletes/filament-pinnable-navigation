@@ -69,9 +69,42 @@
         />
     </div>
 
+    @if ($sidebarCollapsible && filled($groupIcon))
+        <x-filament::dropdown
+            :placement="(__('filament-panels::layout.direction') === 'rtl') ? 'left-start' : 'right-start'"
+            x-show="! $store.sidebar.isOpen"
+        >
+            <x-slot name="trigger">
+                <button
+                    x-data="{ tooltip: false }"
+                    x-effect="
+                        tooltip = $store.sidebar.isOpen
+                            ? false
+                            : {
+                                  content: @js($groupTitle),
+                                  placement: document.dir === 'rtl' ? 'left' : 'right',
+                                  theme: $store.theme,
+                              }
+                    "
+                    x-tooltip.html="tooltip"
+                    class="fi-sidebar-group-dropdown-trigger-btn"
+                >
+                    {{ \Filament\Support\generate_icon_html($groupIcon, size: \Filament\Support\Enums\IconSize::Large) }}
+                </button>
+            </x-slot>
+
+            <x-filament::dropdown.header>
+                {{ $groupTitle }}
+            </x-filament::dropdown.header>
+
+            <x-filament::dropdown.list data-localstorage-pinned-dropdown-items>
+            </x-filament::dropdown.list>
+        </x-filament::dropdown>
+    @endif
+
     <ul
         @if ($sidebarCollapsible)
-            x-show="$store.sidebar.isOpen ? ! $store.sidebar.groupIsCollapsed(label) : true"
+            x-show="$store.sidebar.isOpen ? ! $store.sidebar.groupIsCollapsed(label) : ! @js($sidebarCollapsible && filled($groupIcon))"
             x-transition:enter="fi-transition-enter"
             x-transition:enter-start="fi-transition-enter-start"
             x-transition:enter-end="fi-transition-enter-end"

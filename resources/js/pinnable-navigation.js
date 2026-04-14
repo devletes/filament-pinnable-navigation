@@ -119,12 +119,17 @@
         const pinnedKeys = namespace.getPinnedKeys(storageKey);
         const pinnedGroup = nav.querySelector('[data-localstorage-pinned-group]');
         const pinnedItemsContainer = pinnedGroup?.querySelector('[data-localstorage-pinned-items]');
+        const pinnedDropdownContainer = pinnedGroup?.querySelector('[data-localstorage-pinned-dropdown-items]');
 
         if (!pinnedGroup || !pinnedItemsContainer) {
             return;
         }
 
         pinnedItemsContainer.innerHTML = '';
+
+        if (pinnedDropdownContainer) {
+            pinnedDropdownContainer.innerHTML = '';
+        }
 
         const sourceItems = [...nav.querySelectorAll('.fi-sidebar-item[data-navigation-key][data-pinnable="1"]')]
             .filter((item) => !item.closest('[data-localstorage-pinned-group]'));
@@ -143,6 +148,23 @@
             clone.dataset.pinnedClone = '1';
             namespace.updateItemState(clone, true);
             pinnedItemsContainer.appendChild(clone);
+
+            if (pinnedDropdownContainer) {
+                const label = item.querySelector('.fi-sidebar-item-label')?.textContent?.trim() ?? '';
+                const linkEl = item.querySelector('a[href]');
+                const url = linkEl?.href ?? '#';
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.className = 'fi-dropdown-list-item';
+
+                const span = document.createElement('span');
+                span.className = 'fi-dropdown-list-item-label';
+                span.textContent = label;
+
+                a.appendChild(span);
+                pinnedDropdownContainer.appendChild(a);
+            }
         });
 
         [...pinnedItemsContainer.children].forEach((item, index, items) => {
