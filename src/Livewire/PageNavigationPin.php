@@ -11,6 +11,8 @@ use Illuminate\Contracts\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
+use function Filament\Support\original_request;
+
 class PageNavigationPin extends Component
 {
     public ?string $navigationKey = null;
@@ -86,11 +88,14 @@ class PageNavigationPin extends Component
             return;
         }
 
-        if (str_starts_with($currentKey, 'resource:')) {
-            $routeRequest = app()->bound('originalRequest') ? app('originalRequest') : request();
-            $routeName = (string) $routeRequest->route()?->getName();
+        if (! config('pinnable-navigation.show_in_resource', true)) {
+            return;
+        }
 
-            if ((! config('pinnable-navigation.show_in_resource', true)) || (! str_ends_with($routeName, '.index'))) {
+        if (str_starts_with($currentKey, 'resource:')) {
+            $routeName = (string) original_request()->route()?->getName();
+
+            if (! str_ends_with($routeName, '.index')) {
                 return;
             }
         }

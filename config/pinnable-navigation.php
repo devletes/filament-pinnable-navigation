@@ -31,7 +31,7 @@ return [
     // Icon used for items that are already pinned.
     'unpin_icon' => 'heroicon-s-star',
 
-    // Show the page-header pin button on Filament resource index pages.
+    // Show the page-header pin button on Filament resource and page header areas.
     'show_in_resource' => true,
 
     // Keep only one managed navigation group open at a time.
