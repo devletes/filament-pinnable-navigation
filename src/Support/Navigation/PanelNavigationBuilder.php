@@ -172,9 +172,7 @@ class PanelNavigationBuilder
 
         return collect($items)
             ->filter(fn (NavigationItem $item): bool => $item->isVisible())
-            ->sortBy(function (NavigationItem $item): int {
-                return (int) ($item->getSort() ?? 0);
-            })
+            ->sortBy(fn (NavigationItem $item): int => (int) ($item->getSort() ?? 0))
             ->groupBy(fn (NavigationItem $item): string => serialize($item->getGroup()))
             ->map(function (Collection $groupedItems, string $serializedGroup) use ($registeredGroups): NavigationGroup {
                 $parentItems = $groupedItems->groupBy(fn (NavigationItem $item): string => $item->getParentItem() ?? '');
