@@ -172,7 +172,9 @@ class PanelNavigationBuilder
 
         return collect($items)
             ->filter(fn (NavigationItem $item): bool => $item->isVisible())
-            ->sortBy(fn (NavigationItem $item): int => (int) ($item->getSort() ?? 0))
+            ->sortBy(function (NavigationItem $item): int {
+                return (int) ($item->getSort() ?? 0);
+            })
             ->groupBy(fn (NavigationItem $item): string => serialize($item->getGroup()))
             ->map(function (Collection $groupedItems, string $serializedGroup) use ($registeredGroups): NavigationGroup {
                 $parentItems = $groupedItems->groupBy(fn (NavigationItem $item): string => $item->getParentItem() ?? '');
@@ -240,27 +242,36 @@ class PanelNavigationBuilder
                     return -1;
                 }
 
-                $groupName = unserialize((string) $serializedGroup);
+                $originalGroup = unserialize((string) $serializedGroup);
+                $originalGroupName = $originalGroup;
+                $originalGroupLabel = null;
 
-                if ($groupName instanceof UnitEnum) {
-                    $groupName = $groupName->name;
+                if ($originalGroup instanceof UnitEnum) {
+                    $originalGroupName = $originalGroup->name;
+
+                    if ($originalGroup instanceof \Filament\Support\Contracts\HasLabel) {
+                        $originalGroupLabel = $originalGroup->getLabel();
+                    }
                 }
 
-                $groupsToSearch = $registeredGroups->all();
+                $position = $registeredGroups->search(function (NavigationGroup|string|UnitEnum $registeredGroup, string|int $registeredGroupIndex) use ($originalGroup, $originalGroupName, $originalGroupLabel) {
+                    if ($registeredGroupIndex === $originalGroup || $registeredGroupIndex === $originalGroupName || $registeredGroupIndex === $originalGroupLabel) {
+                        return true;
+                    }
 
-                if ($registeredGroups->first() instanceof NavigationGroup) {
-                    $groupsToSearch = [
-                        ...array_keys($registeredGroups->all()),
-                        ...array_map(
-                            fn (NavigationGroup $registeredGroup): ?string => $registeredGroup->getLabel(),
-                            array_values($registeredGroups->all()),
-                        ),
-                    ];
-                }
+                    if ($registeredGroup === $originalGroup || $registeredGroup === $originalGroupName || $registeredGroup === $originalGroupLabel) {
+                        return true;
+                    }
 
-                $position = array_search($groupName, $groupsToSearch, true);
+                    if ($registeredGroup instanceof NavigationGroup) {
+                        $label = $registeredGroup->getLabel();
+                        return $label === $originalGroup || $label === $originalGroupName || $label === $originalGroupLabel;
+                    }
 
-                return $position === false ? count($groupsToSearch) : $position;
+                    return false;
+                });
+
+                return $position === false ? $registeredGroups->count() : $position;
             })
             ->values()
             ->all();
@@ -270,7 +281,9 @@ class PanelNavigationBuilder
     {
         $items = $items
             ->filter(fn (NavigationItem $item): bool => $item->isVisible())
-            ->sortBy(fn (NavigationItem $item): int => (int) ($item->getSort() ?? 0))
+            ->sortBy(function (NavigationItem $item): int {
+                return (int) ($item->getSort() ?? 0);
+            })
             ->values();
 
         if ($items->isEmpty()) {
