@@ -5,6 +5,7 @@ namespace Devletes\FilamentPinnableNavigation\Support\Navigation;
 use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
+use Filament\Support\Contracts\HasLabel;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -202,26 +203,33 @@ class PanelNavigationBuilder
                 }
 
                 $groupEnum = null;
+                $groupLabel = null;
 
                 if ($groupName instanceof UnitEnum) {
                     $groupEnum = $groupName;
                     $groupName = $groupEnum->name;
+
+                    if ($groupEnum instanceof HasLabel) {
+                        $groupLabel = $groupEnum->getLabel();
+                    }
                 }
 
-                $registeredGroup = $registeredGroups->first(function (NavigationGroup|string $registeredGroup, string|int $registeredGroupIndex) use ($groupName) {
-                    if ($registeredGroupIndex === $groupName) {
+                $registeredGroup = $registeredGroups->first(function (NavigationGroup|string|UnitEnum $registeredGroup, string|int $registeredGroupIndex) use ($groupEnum, $groupName, $groupLabel) {
+                    if ($registeredGroupIndex === $groupEnum || $registeredGroupIndex === $groupName || $registeredGroupIndex === $groupLabel) {
                         return true;
                     }
 
-                    if ($registeredGroup === $groupName) {
+                    if ($registeredGroup === $groupEnum || $registeredGroup === $groupName || $registeredGroup === $groupLabel) {
                         return true;
                     }
 
-                    if (! $registeredGroup instanceof NavigationGroup) {
-                        return false;
+                    if ($registeredGroup instanceof NavigationGroup) {
+                        $label = $registeredGroup->getLabel();
+
+                        return $label === $groupEnum || $label === $groupName || $label === $groupLabel;
                     }
 
-                    return $registeredGroup->getLabel() === $groupName;
+                    return false;
                 });
 
                 if ($registeredGroup instanceof NavigationGroup) {
@@ -240,27 +248,37 @@ class PanelNavigationBuilder
                     return -1;
                 }
 
-                $groupName = unserialize((string) $serializedGroup);
+                $originalGroup = unserialize((string) $serializedGroup);
+                $originalGroupName = $originalGroup;
+                $originalGroupLabel = null;
 
-                if ($groupName instanceof UnitEnum) {
-                    $groupName = $groupName->name;
+                if ($originalGroup instanceof UnitEnum) {
+                    $originalGroupName = $originalGroup->name;
+
+                    if ($originalGroup instanceof HasLabel) {
+                        $originalGroupLabel = $originalGroup->getLabel();
+                    }
                 }
 
-                $groupsToSearch = $registeredGroups->all();
+                $position = $registeredGroups->search(function (NavigationGroup|string|UnitEnum $registeredGroup, string|int $registeredGroupIndex) use ($originalGroup, $originalGroupName, $originalGroupLabel) {
+                    if ($registeredGroupIndex === $originalGroup || $registeredGroupIndex === $originalGroupName || $registeredGroupIndex === $originalGroupLabel) {
+                        return true;
+                    }
 
-                if ($registeredGroups->first() instanceof NavigationGroup) {
-                    $groupsToSearch = [
-                        ...array_keys($registeredGroups->all()),
-                        ...array_map(
-                            fn (NavigationGroup $registeredGroup): ?string => $registeredGroup->getLabel(),
-                            array_values($registeredGroups->all()),
-                        ),
-                    ];
-                }
+                    if ($registeredGroup === $originalGroup || $registeredGroup === $originalGroupName || $registeredGroup === $originalGroupLabel) {
+                        return true;
+                    }
 
-                $position = array_search($groupName, $groupsToSearch, true);
+                    if ($registeredGroup instanceof NavigationGroup) {
+                        $label = $registeredGroup->getLabel();
 
-                return $position === false ? count($groupsToSearch) : $position;
+                        return $label === $originalGroup || $label === $originalGroupName || $label === $originalGroupLabel;
+                    }
+
+                    return false;
+                });
+
+                return $position === false ? $registeredGroups->count() : $position;
             })
             ->values()
             ->all();
