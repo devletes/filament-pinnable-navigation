@@ -153,17 +153,29 @@
                 const label = item.querySelector('.fi-sidebar-item-label')?.textContent?.trim() ?? '';
                 const linkEl = item.querySelector('a[href]');
                 const url = linkEl?.href ?? '#';
+                const sourcePinBtn = item.querySelector('[data-localstorage-pin-button]');
+
+                const row = document.createElement('div');
+                row.className = 'fi-sidebar-dropdown-item-row';
 
                 const a = document.createElement('a');
                 a.href = url;
-                a.className = 'fi-dropdown-list-item';
+                a.className = 'fi-dropdown-list-item fi-sidebar-dropdown-item-btn-with-pin';
 
                 const span = document.createElement('span');
                 span.className = 'fi-dropdown-list-item-label';
                 span.textContent = label;
 
                 a.appendChild(span);
-                pinnedDropdownContainer.appendChild(a);
+                row.appendChild(a);
+
+                if (sourcePinBtn) {
+                    const pinClone = sourcePinBtn.cloneNode(true);
+                    namespace.updateButtonState(pinClone, true);
+                    row.appendChild(pinClone);
+                }
+
+                pinnedDropdownContainer.appendChild(row);
             }
         });
 
@@ -172,6 +184,16 @@
         });
 
         pinnedGroup.hidden = pinnedItemsContainer.children.length === 0;
+
+        nav.querySelectorAll('.fi-sidebar-dropdown-item-row [data-localstorage-pin-button]').forEach((button) => {
+            const navigationKey = button.dataset.navigationKey;
+
+            if (!navigationKey) {
+                return;
+            }
+
+            namespace.updateButtonState(button, pinnedKeys.includes(navigationKey));
+        });
     };
 
     namespace.refresh = function (root = document) {

@@ -10,6 +10,11 @@
     $hasDropdown = filled($label) && filled($icon) && $sidebarCollapsible;
     $groupLabel = $attributes->get('data-accordion-id') ?? ($subNavigation ? "sub_navigation_{$label}" : $label);
     $isAccordionManaged = $attributes->get('data-accordion-managed') === '1';
+    $usesDatabase = app(\Devletes\FilamentPinnableNavigation\Support\Navigation\PinPersistenceManager::class)->usesDatabase();
+    $pinIcon = (string) config('pinnable-navigation.pin_icon', 'heroicon-o-star');
+    $unpinIcon = (string) config('pinnable-navigation.unpin_icon', 'heroicon-s-star');
+    $outlinedIcon = base64_encode(\Filament\Support\generate_icon_html($pinIcon, size: \Filament\Support\Enums\IconSize::Small)->toHtml());
+    $filledIcon = base64_encode(\Filament\Support\generate_icon_html($unpinIcon, size: \Filament\Support\Enums\IconSize::Small)->toHtml());
 @endphp
 
 <li
@@ -155,21 +160,70 @@
                             $itemIcon = $itemIsActive ? ($item->getActiveIcon() ?? $item->getIcon()) : $item->getIcon();
                             $shouldItemOpenUrlInNewTab = $item->shouldOpenUrlInNewTab();
                             $itemExtraAttributes = $item->getExtraAttributeBag();
+                            $itemNavigationKey = $itemExtraAttributes->get('data-navigation-key');
+                            $itemIsPinnable = str_contains(trim((string) $itemExtraAttributes->get('data-pinnable')), '1');
+                            $itemIsPinned = str_contains(trim((string) $itemExtraAttributes->get('data-pinned')), '1');
+                            $itemHasPinButton = $itemIsPinnable && filled($itemNavigationKey);
                         @endphp
 
-                        <x-filament::dropdown.list.item
-                            :badge="$itemBadge"
-                            :badge-color="$itemBadgeColor"
-                            :badge-tooltip="$itemBadgeTooltip"
-                            :color="$itemIsActive ? 'primary' : 'gray'"
-                            :href="$itemUrl"
-                            :icon="$itemIcon"
-                            tag="a"
-                            :target="$shouldItemOpenUrlInNewTab ? '_blank' : null"
-                            :attributes="\Filament\Support\prepare_inherited_attributes($itemExtraAttributes)"
-                        >
-                            {{ $item->getLabel() }}
-                        </x-filament::dropdown.list.item>
+                        @if ($itemHasPinButton)
+                            <div class="fi-sidebar-dropdown-item-row">
+                                <x-filament::dropdown.list.item
+                                    :badge="$itemBadge"
+                                    :badge-color="$itemBadgeColor"
+                                    :badge-tooltip="$itemBadgeTooltip"
+                                    :color="$itemIsActive ? 'primary' : 'gray'"
+                                    :href="$itemUrl"
+                                    :icon="$itemIcon"
+                                    tag="a"
+                                    :target="$shouldItemOpenUrlInNewTab ? '_blank' : null"
+                                    :attributes="\Filament\Support\prepare_inherited_attributes($itemExtraAttributes)"
+                                    class="fi-sidebar-dropdown-item-btn-with-pin"
+                                >
+                                    {{ $item->getLabel() }}
+                                </x-filament::dropdown.list.item>
+
+                                @if ($usesDatabase)
+                                    <x-filament::icon-button
+                                        color="gray"
+                                        :icon="$itemIsPinned ? $unpinIcon : $pinIcon"
+                                        icon-size="sm"
+                                        :label="$itemIsPinned ? __('pinnable-navigation::pinnable-navigation.actions.unpin_navigation_item') : __('pinnable-navigation::pinnable-navigation.actions.pin_navigation_item')"
+                                        wire:click.stop="togglePin('{{ $itemNavigationKey }}')"
+                                        wire:target="togglePin('{{ $itemNavigationKey }}')"
+                                        class="fi-sidebar-pin-btn"
+                                    />
+                                @else
+                                    <x-filament::icon-button
+                                        color="gray"
+                                        :icon="$pinIcon"
+                                        icon-size="sm"
+                                        :label="__('pinnable-navigation::pinnable-navigation.actions.pin_navigation_item')"
+                                        :data-localstorage-pin-button="$itemNavigationKey"
+                                        :data-navigation-key="$itemNavigationKey"
+                                        :data-pin-label="__('pinnable-navigation::pinnable-navigation.actions.pin_navigation_item')"
+                                        :data-unpin-label="__('pinnable-navigation::pinnable-navigation.actions.unpin_navigation_item')"
+                                        :data-outlined-icon="$outlinedIcon"
+                                        :data-filled-icon="$filledIcon"
+                                        class="fi-sidebar-pin-btn"
+                                    />
+                                @endif
+                            </div>
+                        @else
+                            <x-filament::dropdown.list.item
+                                :badge="$itemBadge"
+                                :badge-color="$itemBadgeColor"
+                                :badge-tooltip="$itemBadgeTooltip"
+                                :color="$itemIsActive ? 'primary' : 'gray'"
+                                :href="$itemUrl"
+                                :icon="$itemIcon"
+                                tag="a"
+                                :target="$shouldItemOpenUrlInNewTab ? '_blank' : null"
+                                :attributes="\Filament\Support\prepare_inherited_attributes($itemExtraAttributes)"
+                            >
+                                {{ $item->getLabel() }}
+                            </x-filament::dropdown.list.item>
+                        @endif
                     @endforeach
                 </x-filament::dropdown.list>
             @endforeach
