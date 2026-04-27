@@ -104,6 +104,15 @@ php artisan migrate
 
 ![Pinned group with multiple items](docs/images/two-pinned.png)
 
+## Need something custom?
+
+We build production Filament panels and plugins for teams that want to ship fast without compromising on polish. If you need a custom feature, an extended variant of this package, or a fully bespoke component built for your stack, we can help.
+
+- **Browse the rest of our Filament work:** [filament.devletes.com](https://filament.devletes.com)
+- **Get in touch:** [salman@devletes.com](mailto:salman@devletes.com)
+
+Typical engagements: new Filament plugins, custom resources/widgets/actions, theme + UX work, integrations with your existing services, and one-off tailored forks of our open-source packages.
+
 ## Credits
 
 - [Salman Hijazi](https://www.linkedin.com/in/syedsalmanhijazi/)
@@ -111,6 +120,3 @@ php artisan migrate
 ## License
 
 MIT. See [LICENSE.md](LICENSE.md).
-
-
-
