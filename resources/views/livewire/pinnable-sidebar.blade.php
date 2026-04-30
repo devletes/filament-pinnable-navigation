@@ -175,26 +175,28 @@
             </ul>
 
             <script>
-                const sidebarNav = document.currentScript.closest('.fi-sidebar-nav')
-                const accordionEnabled = sidebarNav?.dataset.accordionEnabled === '1'
-                const accordionGroups = JSON.parse(sidebarNav?.dataset.accordionGroups ?? '[]')
-                const parsedCollapsedGroups = JSON.parse(localStorage.getItem('collapsedGroups') ?? 'null')
-                const collapsedGroups = Array.isArray(parsedCollapsedGroups)
-                    ? parsedCollapsedGroups
-                    : (accordionEnabled ? accordionGroups : @js($defaultCollapsedGroups))
+                (() => {
+                    const sidebarNav = document.currentScript.closest('.fi-sidebar-nav')
+                    const accordionEnabled = sidebarNav?.dataset.accordionEnabled === '1'
+                    const accordionGroups = JSON.parse(sidebarNav?.dataset.accordionGroups ?? '[]')
+                    const parsedCollapsedGroups = JSON.parse(localStorage.getItem('collapsedGroups') ?? 'null')
+                    const collapsedGroups = Array.isArray(parsedCollapsedGroups)
+                        ? parsedCollapsedGroups
+                        : (accordionEnabled ? accordionGroups : @js($defaultCollapsedGroups))
 
-                localStorage.setItem('collapsedGroups', JSON.stringify(collapsedGroups))
+                    localStorage.setItem('collapsedGroups', JSON.stringify(collapsedGroups))
 
-                document
-                    .querySelectorAll('.fi-sidebar-group')
-                    .forEach((group) => {
-                        if (! collapsedGroups.includes(group.dataset.groupLabel)) {
-                            return
-                        }
+                    document
+                        .querySelectorAll('.fi-sidebar-group')
+                        .forEach((group) => {
+                            if (! collapsedGroups.includes(group.dataset.groupLabel)) {
+                                return
+                            }
 
-                        group.querySelector('.fi-sidebar-group-items').style.display = 'none'
-                        group.classList.add('fi-collapsed')
-                    })
+                            group.querySelector('.fi-sidebar-group-items').style.display = 'none'
+                            group.classList.add('fi-collapsed')
+                        })
+                })()
             </script>
 
             {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::SIDEBAR_NAV_END) }}
