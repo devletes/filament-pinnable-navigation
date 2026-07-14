@@ -2,6 +2,7 @@
 
 namespace Devletes\FilamentPinnableNavigation\Support\Navigation;
 
+use Devletes\FilamentPinnableNavigation\Models\PinnableNavigationPin;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
 
@@ -109,6 +110,6 @@ class UserNavigationPinService
 
     protected function getModelClass(): string
     {
-        return config('pinnable-navigation.model', \Devletes\FilamentPinnableNavigation\Models\PinnableNavigationPin::class);
+        return config('pinnable-navigation.model', PinnableNavigationPin::class);
     }
 }

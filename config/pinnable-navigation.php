@@ -1,5 +1,7 @@
 <?php
 
+use Devletes\FilamentPinnableNavigation\Models\PinnableNavigationPin;
+
 /*
 |--------------------------------------------------------------------------
 | Filament Pinnable Navigation
@@ -21,7 +23,7 @@ return [
 
     // Custom model to use for storing pinned navigation items.
     // Set to a custom model class that extends PinnableNavigationPin.
-    'model' => \Devletes\FilamentPinnableNavigation\Models\PinnableNavigationPin::class,
+    'model' => PinnableNavigationPin::class,
 
     // Label shown for the synthetic pinned navigation group.
     'group_title' => 'Pinned',

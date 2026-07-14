@@ -1,7 +1,10 @@
 <?php
 
 use Devletes\FilamentPinnableNavigation\Support\Navigation\UserNavigationPinService;
+use Devletes\FilamentPinnableNavigation\Tests\Fixtures\Models\CustomNavigationPin;
 use Devletes\FilamentPinnableNavigation\Tests\Support\CreatesNavigationTestTables;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use Workbench\App\Models\User;
 
 uses(CreatesNavigationTestTables::class);
@@ -47,4 +50,37 @@ it('only removes the matching pin when unpinning', function (): void {
         ->and($service->isPinned($user, 'admin', 'page:two'))->toBeTrue();
 
     $this->assertDatabaseCount('pinned_navigation_items', 1);
+});
+
+it('stores pins through the configured custom model class', function (): void {
+    config()->set('pinnable-navigation.model', CustomNavigationPin::class);
+
+    Schema::create('custom_pinned_navigation_items', function (Blueprint $table): void {
+        $table->id();
+        $table->unsignedBigInteger('user_id');
+        $table->string('user_type', 100);
+        $table->string('panel_id', 50);
+        $table->string('navigation_key', 191);
+        $table->timestamps();
+    });
+
+    $user = User::query()->create([
+        'name' => 'Test User',
+        'email' => 'test@example.com',
+        'password' => 'password',
+    ]);
+
+    $service = app(UserNavigationPinService::class);
+
+    $service->pin($user, 'admin', 'page:custom');
+
+    $this->assertDatabaseCount('custom_pinned_navigation_items', 1);
+    $this->assertDatabaseCount('pinned_navigation_items', 0);
+
+    expect($service->isPinned($user, 'admin', 'page:custom'))->toBeTrue()
+        ->and($service->getPinnedKeys($user, 'admin')->all())->toBe(['page:custom']);
+
+    $service->unpin($user, 'admin', 'page:custom');
+
+    $this->assertDatabaseCount('custom_pinned_navigation_items', 0);
 });
