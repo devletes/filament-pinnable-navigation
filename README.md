@@ -48,6 +48,7 @@ Default configuration:
 return [
     'database_enabled' => false,
     'table_name' => 'pinned_navigation_items',
+    'model' => \Devletes\FilamentPinnableNavigation\Models\PinnableNavigationPin::class,
     'group_title' => 'Pinned',
     'group_icon' => 'heroicon-o-star',
     'pin_icon' => 'heroicon-o-star',
@@ -61,6 +62,7 @@ Configuration options:
 
 - `database_enabled`: Persist pins in the database instead of browser localStorage.
 - `table_name`: Database table used when database persistence is enabled.
+- `model`: Eloquent model used to store pins. Point it at your own class extending `PinnableNavigationPin` to customize storage.
 - `group_title`: Label used for the synthetic pinned group.
 - `group_icon`: Optional icon shown for the pinned group.
 - `pin_icon`: Icon used when an item is not pinned.

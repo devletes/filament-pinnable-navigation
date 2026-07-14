@@ -1,5 +1,7 @@
 <?php
 
+use Devletes\FilamentPinnableNavigation\Models\PinnableNavigationPin;
+
 /*
 |--------------------------------------------------------------------------
 | Filament Pinnable Navigation
@@ -18,6 +20,10 @@ return [
 
     // Database table used to store pinned navigation items when database persistence is enabled.
     'table_name' => 'pinned_navigation_items',
+
+    // Custom model to use for storing pinned navigation items.
+    // Set to a custom model class that extends PinnableNavigationPin.
+    'model' => PinnableNavigationPin::class,
 
     // Label shown for the synthetic pinned navigation group.
     'group_title' => 'Pinned',
