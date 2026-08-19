@@ -115,6 +115,17 @@ We build production Filament panels and plugins for teams that want to ship fast
 
 Typical engagements: new Filament plugins, custom resources/widgets/actions, theme + UX work, integrations with your existing services, and one-off tailored forks of our open-source packages.
 
+## Have you seen our Orbit theme?
+
+Orbit is our dark-first theme for Filament 5. Every panel surface is restyled — sidebar, topbar, forms, tables, modals, notifications.
+
+<table><tr>
+<td width="50%"><img src="https://filament.devletes.com/screenshots/orbit/resource_detail_with_hero_card_light.png" alt="Orbit theme, light mode"></td>
+<td width="50%"><img src="https://filament.devletes.com/screenshots/orbit/resource_detail_with_hero_card.png" alt="Orbit theme, dark mode"></td>
+</tr></table>
+
+**[Check it out here](https://filament.devletes.com/orbit) →**
+
 ## Credits
 
 - [Salman Hijazi](https://www.linkedin.com/in/syedsalmanhijazi/)
